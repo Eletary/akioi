@@ -1,9 +1,5 @@
 # 离散化
 
-## 前置芝士
-
-- [AK IOI](/basic/akioi.md)
-
 ## 简介
 
 离散化，就是当有些数据因为本身很大或者类型不支持，自身无法作为数组的下标来方便地处理，而影响最终结果的只有元素之间的相对大小关系时，我们可以将原来的数据按照从大到小编号来处理问题。
@@ -35,4 +31,4 @@ for (int i{1};i<=n;++i)
 
 ## 参考文献：
 
-[OI-Wiki](https://oi-wiki.org/misc/discrete/)
+- [OI-Wiki](https://oi-wiki.org/misc/discrete/)
