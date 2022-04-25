@@ -26,7 +26,11 @@ void merge(int x,int y) {f[Find(x)]=Find(y);}
 
 ### 按秩合并
 
-咕咕咕
+按照 $size$ 或 $depth$ 进行启发式合并，将秩小的合并到秩大的上面。
+
+一般 $size$ 结合路径压缩使用，$depth$ 单独使用。
+
+一般用于不能路径压缩或压缩代价极大的题目。
 
 ### 路径压缩
 
@@ -73,7 +77,7 @@ $O(\alpha(n))$。几乎 $=O(1)$。
 
 一般这类题目都会给一堆两点之间的关系。
 
-> 给定 $m$ 组关系 $a-b=c$，判断是否造假（后面的关系和前面冲突）。
+> 给定 $m$ 组关系 $a_x-a_y=c$，判断是否造假（后面的关系和前面冲突）。
 
 将 $f(a,b)$ 替换为 $a-b$ 即可。
 $$
@@ -99,5 +103,106 @@ bool Union(int x,int y,int z) // 若造假返回 true，其余情况返回 false
     dis[f[x]]=z-dis[x]+dis[y]; // (x-y)-(x-Fx)+(y-Fy)=Fx-Fy;
     f[f[x]]=f[y];
     return false;
+}
+```
+
+---
+
+有时带权并查集不能直接维护目标信息：
+
+> 给定 $m$ 组关系 $a_x+a_y=c\ \ (1\leq x\leq n,n<y\leq 2n)$，判断是否造假（后面的关系和前面冲突）。
+
+$a+b$ 不好直接维护。但是本题有一种有趣的性质： $a$ 和 $b$ 是不相交的，所以可以认为维护信息为 $a-(-b)$。这样，要维护/查询的信息就总是 $x-y$。
+
+---
+
+有时候带权并查集结合其他信息维护：
+
+> 有 $n$ 个小于 $2^{20}$ 的数：
+> - 告诉你 $X_p=v$
+> - 告诉你 $X_p\oplus X_q=v$
+> - 给定 $k$ 个下标，求这些下标对应值的异或和
+
+同时维护一个 $val$。对于每次操作 1，令 $val(rt):=v\oplus dis(p)$。合并时两集合任意一边根有值则令新根有值。查询时先排掉有值的，剩下的两两配对即可（对于在同一集合的 $p,q$，$X_p\oplus X_q=dis(p)\oplus dis(q)$）。
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+const int MAXN{20000};
+int f[MAXN+5],dis[MAXN+5];
+int val[MAXN+5];
+void collapse(int x)
+{
+    if (x==f[x]) return;
+    crupt(f[x]);
+    dis[x]^=dis[f[x]];
+    f[x]=f[f[x]];
+}
+int getf(int x){collapse(x);return f[x];}
+int getv(int x)
+{
+    collapse(x);
+    if (val[f[x]]!=-1) val[x]=dis[x]^val[f[x]];
+    return val[x];
+}
+void setv(int x,int y)
+{
+    if (getv(x)!=-1) return;
+    val[x]=y;
+    val[f[x]]=dis[x]^val[x];
+}
+void merge(int a,int b,int x)
+{
+    if (getf(a)==getf(b)) return;
+    if (getv(a)!=-1&&getv(b)!=-1) return;
+    dis[f[a]]=dis[a]^dis[b]^x;
+    if (val[f[a]]!=-1) val[f[b]]=val[f[a]]^dis[f[a]];
+    f[f[a]]=f[b];
+}
+int qwq[MAXN+5];
+int main()
+{
+    int n,q;cin>>n>>q;
+    for (int i{1};i<=n;++i) f[i]=i,dis[i]=0,val[i]=-1;
+    while (q--)
+    {
+        int op,p;scanf("%d %d",&op,&p);
+        if (op==1)
+        {
+            int v;scanf("%d",&v);
+            setv(p+1,v);
+        }
+        else if (op==2)
+        {
+            int q,v;scanf("%d %d",&q,&v);
+            merge(p+1,q+1,v);
+        }
+        else
+        {
+            int k[15];
+            int cnt{0},sum{0};
+            for (int i{0};i<p;++i)
+            {
+                int w;scanf("%d",&w);++w;
+                if (getv(w)!=-1) sum^=val[w];
+                else k[cnt++]=w;
+            }
+            for (int i{0};i<cnt;++i) qwq[getf(k[i])]=0;
+            for (int i{0};i<cnt;++i)
+            {
+                if (qwq[f[k[i]]]) sum^=dis[qwq[f[k[i]]]]^dis[k[i]],qwq[f[k[i]]]=0;
+                else qwq[f[k[i]]]=k[i];
+            }
+            for (int i{0};i<cnt;++i)
+                if (qwq[f[k[i]]])
+                {
+                    printf("I don't know.\n");
+                    goto xun;
+                }
+            printf("%d\n",sum);
+            xun:;
+        }
+    }
+    return 0;
 }
 ```
