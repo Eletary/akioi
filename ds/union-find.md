@@ -53,9 +53,9 @@ $O(\alpha(n))$。几乎 $=O(1)$。
 
 已知 $f(a,b)$。要将 $a$ 所在的集合合并到 $b$ 上。此时每个点存的权值更新为 $f(x,\text{Find}(b))$。
 
-显然只要求出 $f(\text{Find}(a),\text{Find}(b))$ 即可（对于 $a$ 所在的集合内的任意点 $x$，$f(x,\text{Find}(a))$ 和 $f(\text{Find(a)},\text{Find(b)})$ 已知）。
+显然只要求出 $f(\text{Find}(a),\text{Find}(b))$ 即可（对于 $a$ 所在的集合内的任意点 $x$，$f(x,\text{Find}(a))$ 和 $f(\text{Find}(a),\text{Find}(b))$ 已知）。
 
-因为 $f(a,\text{Find}(a)),f(a,b))$ 已知，所以可知 $f(b,\text{Find(a)})。$ y又已知 $f(b,\text{Find}(b))$ 所以可以求出。
+因为 $f(a,\text{Find}(a)),f(a,b))$ 已知，所以可知 $f(b,\text{Find}(a))$，又已知 $f(b,\text{Find}(b))$ 所以可以求出。
 
 至此：只剩下一个问题：更新 $a$ 所在的集合内点的权值。
 
