@@ -17,7 +17,77 @@
 
 ## 应用
 
+### 表示集合
+
 咕咕咕
+
+### Shift-And/Or
+
+一种有趣的、利用位掩码表示信息/进行匹配的算法。
+
+> 一个仅由 $0∼9$ 字符组成的字符串 $A$ 有 $n$ 个字符，$i$ 位置可选择的字符有 $a_i$ 种，给出一个长串 $B$，找出 $A$ 能构成的 $B$ 的所有子串。
+
+Shift-And 代码：
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using BT=bitset<1005>;
+BT bt[10],ct[10];
+int main()
+{
+    int n;cin>>n;
+    for (int i{1};i<=n;++i)
+    {
+        int k;scanf("%d",&k);
+        for (int j{1};j<=k;++j)
+        {
+            int w;scanf("%d",&w);
+            bt[w][i]=1;
+        }
+    }
+    string anb;cin>>anb;anb="$"+anb;
+    BT ans;
+    for (int i{1};i<=anb.size()-1;++i)
+    {
+        ans<<=1;ans.set(1);
+        ans&=bt[anb[i]^48];
+        if (ans[n]) printf("%d\n",i-n); 
+    }
+    return 0;
+}
+```
+
+Shift-Or 代码（对 Shift-And 进行了简单优化）：
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using BT=bitset<1005>;
+BT bt[10],ct[10];
+int main()
+{
+    int n;cin>>n;
+    for (int i{0};i<10;++i) bt[i].set();
+    for (int i{1};i<=n;++i)
+    {
+        int k;scanf("%d",&k);
+        for (int j{1};j<=k;++j)
+        {
+            int w;scanf("%d",&w);
+            bt[w][i]=0;
+        }
+    }
+    string anb;cin>>anb;anb="$"+anb;
+    BT ans;ans.set();
+    for (int i{1};i<=anb.size()-1;++i)
+    {
+        ans=ans<<1|bt[anb[i]^48];
+        if (ans[n]==0) printf("%d\n",i-n); 
+    }
+    return 0;
+}
+```
 
 ## 参考文献
 
