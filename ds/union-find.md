@@ -9,11 +9,11 @@
 并查集的操作有两种：
 
 - $\text{Find}(x)$ 查找 $x$ 的祖先，如果两个元素祖先相同则它们在同一个集合里
-- $\text{Union}(x,y)$ 又称 $\text{merge}$，将 $x$ 和 $y$ 所在的集合合并（令 $Find(x)$ 的祖先为 $\text{Find}(y)$）
+- $\text{Unite}(x,y)$ 又称 $\text{Unite}$，将 $x$ 和 $y$ 所在的集合合并（令 $Find(x)$ 的祖先为 $\text{Find}(y)$）
 
 ```cpp
 int Find(int x) {return x==f[x]?x:Find(f[x]);}
-void merge(int x,int y) {f[Find(x)]=Find(y);}
+void Unite(int x,int y) {f[Find(x)]=Find(y);}
 ```
 
 在树退化成链时，每次操作为 $\Theta(n^2)$。总体复杂度 $O(n^2)$。
@@ -93,7 +93,7 @@ void collapse(int x) // 路径压缩
     f[x]=f[f[x]];
 }
 int Find(int x) {collapse(x);return f[x];}
-bool Union(int x,int y,int z) // 若造假返回 true，其余情况返回 false
+bool Unite(int x,int y,int z) // 若造假返回 true，其余情况返回 false
 {
     if (Find(x)==Find(y)) return dis[x]-dis[y]!=z; // (x-rt)-(y-rt)=x-y
     dis[f[x]]=z-dis[x]+dis[y]; // (x-y)-(x-Fx)+(y-Fy)=Fx-Fy;
@@ -134,8 +134,8 @@ void collapse(int x)
     dis[x]^=dis[f[x]];
     f[x]=f[f[x]];
 }
-int getf(int x){collapse(x);return f[x];}
-int getv(int x)
+int Find(int x){collapse(x);return f[x];}
+int Findv(int x)
 {
     collapse(x);
     if (val[f[x]]!=-1) val[x]=dis[x]^val[f[x]];
@@ -143,14 +143,14 @@ int getv(int x)
 }
 void setv(int x,int y)
 {
-    if (getv(x)!=-1) return;
+    if (Findv(x)!=-1) return;
     val[x]=y;
     val[f[x]]=dis[x]^val[x];
 }
-void merge(int a,int b,int x)
+void Unite(int a,int b,int x)
 {
-    if (getf(a)==getf(b)) return;
-    if (getv(a)!=-1&&getv(b)!=-1) return;
+    if (Find(a)==Find(b)) return;
+    if (Findv(a)!=-1&&Findv(b)!=-1) return;
     dis[f[a]]=dis[a]^dis[b]^x;
     if (val[f[a]]!=-1) val[f[b]]=val[f[a]]^dis[f[a]];
     f[f[a]]=f[b];
@@ -171,7 +171,7 @@ int main()
         else if (op==2)
         {
             int q,v;scanf("%d %d",&q,&v);
-            merge(p+1,q+1,v);
+            Unite(p+1,q+1,v);
         }
         else
         {
@@ -180,10 +180,10 @@ int main()
             for (int i{0};i<p;++i)
             {
                 int w;scanf("%d",&w);++w;
-                if (getv(w)!=-1) sum^=val[w];
+                if (Findv(w)!=-1) sum^=val[w];
                 else k[cnt++]=w;
             }
-            for (int i{0};i<cnt;++i) qwq[getf(k[i])]=0;
+            for (int i{0};i<cnt;++i) qwq[Find(k[i])]=0;
             for (int i{0};i<cnt;++i)
             {
                 if (qwq[f[k[i]]]) sum^=dis[qwq[f[k[i]]]]^dis[k[i]],qwq[f[k[i]]]=0;
