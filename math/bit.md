@@ -110,7 +110,3 @@ int main()
     return 0;
 }
 ```
-
-## 参考文献
-
-- [OI-Wiki](https://oi-wiki.org/math/bit/)

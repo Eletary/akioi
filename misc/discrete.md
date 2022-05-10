@@ -28,7 +28,3 @@ lower_bound(WS+1,wend,x)-WS
 for (int i{1};i<=n;++i)
     a[i]=lower_bound(WS+1,wend,a[i])-WS;
 ```
-
-## 参考文献：
-
-- [OI-Wiki](https://oi-wiki.org/misc/discrete/)
