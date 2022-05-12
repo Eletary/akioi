@@ -1,5 +1,7 @@
 # 珂朵莉树
 
+一种维护一堆区间信息的暴力数据结构。
+
 珂朵莉树可以高效维护包含大量区间赋值的区间操作。复杂度接近 $O(n)$，上界为 $\Theta(n\log \log n)$。
 
 ## split
@@ -20,11 +22,11 @@ Iter split(int p)
 ## assign
 
 ```cpp
-void assign(int l,int r，int x)
+void assign(int l,int r，int v)
 {
     Iter itr{split(r)},itl{split(l)};
     t.erase(itl,itr);
-    t.emplace(l,r,x);
+    t.emplace(l,r,v);
 }
 ```
 
