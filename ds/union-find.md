@@ -208,3 +208,18 @@ int main()
 在值域上开并查集，可以方便的处理一些值域问题。
 
 最初、第二分块有值域并查集的应用。
+
+## 代替链表
+
+如果只有删除没有插入，并查集可以代替链表。
+
+只要将 $x$ 的 father 改到 $x-1$ 即可。
+
+> - 删除区间内的所有点
+> - 查询区间是否有没删完的点
+
+```cpp
+// 注意是 [l,r]
+bool Remain(int l,int r){return Find(r)>=l;}
+void Remove(int l,int r){while (Find(r)>=l) f[f[r]]=f[r]-1;}
+```
