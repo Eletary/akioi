@@ -216,8 +216,6 @@ Int query(pnode p,int L,int R)
 - 注意查前驱后继时的一些判断（其实任何写法都要注意）。
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
 struct tnode
 {
     tnode *l,*r;
