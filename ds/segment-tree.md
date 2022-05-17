@@ -197,3 +197,70 @@ Int query(pnode p,int L,int R)
 如果，需要从一个区间上的点连到一个点，可以考虑把线段树上组成这个区间的点（即：查询时返回整个区间信息的节点）连到目标点，大大降低了时空复杂度。
 
 例题还没做出来，代码就不放了。
+
+## 动态开点
+
+假设我们要建一颗值域线段树。空间复杂度 $\Theta(V)$。
+
+如果值域过大，可以考虑不建树，而是每个节点在需要用的时候在分配。
+
+摊还空间复杂度 $o(\lg V)$，单次最坏 $\Theta(\lg n)$。
+
+动态开点一般要求初值不特殊。
+
+[普通平衡树](https://www.luogu.com.cn/problem/P3369)
+
+实现的时候要注意：
+
+- 解引用空指针比较麻烦，建议建哨兵并将 `cnt` 设为 `0`；
+- 注意查前驱后继时的一些判断（其实任何写法都要注意）。
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+struct tnode
+{
+    tnode *l,*r;
+    int cnt;
+    tnode(int c=0):cnt{c}{}
+};
+using pnode=tnode*;
+pnode null{new tnode};
+void check(pnode& p){if(p!=null)return;p=new tnode;p->l=p->r=null;}
+// k=1为插入，k=-1为删除
+void modify(pnode& p,int x,int k,int L=-1e7,int R=1e7)
+{
+    check(p);
+    p->cnt+=k;
+    if (L==x&&R==x+1) return;
+    int mid{L+R>>1};
+    if (x<mid)
+        modify(p->l,x,k,L,mid);
+    else
+        modify(p->r,x,k,mid,R);
+}
+int ex;
+// 返回小于x的数个数，ex为x有多少个
+int Rank(pnode& p,int x,int L=-1e7,int R=1e7)
+{
+    check(p);
+    if (L==x&&R==x+1)
+        return ex=p->cnt,0;
+    int mid{L+R>>1};
+    if (x<mid)
+        return Rank(p->l,x,L,mid);
+    else
+        return p->l->cnt+Rank(p->r,x,mid,R);
+}
+int kth(pnode& p,int k,int L=-1e7,int R=1e7)
+{
+    check(p);
+    if (L==R-1) return L;
+    int mid{L+R>>1};
+    if (k<=p->l->cnt)
+        return kth(p->l,k,L,mid);
+    else
+        return kth(p->r,k-p->l->cnt,mid,R);
+}
+// 前后驱可由 kth+rank 简单实现
+```
