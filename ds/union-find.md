@@ -1,3 +1,7 @@
+本文来自 <https://github.com/NFLSCode/akioi/blob/qwq/ds/union-find.md>
+
+（也是我写的qwq）
+
 # 并查集
 
 并查集是一种维护不相交集合的数据结构。
@@ -9,7 +13,7 @@
 并查集的操作有两种：
 
 - $\text{Find}(x)$ 查找 $x$ 的祖先，如果两个元素祖先相同则它们在同一个集合里
-- $\text{Unite}(x,y)$ 又称 $\text{Unite}$，将 $x$ 和 $y$ 所在的集合合并（令 $Find(x)$ 的祖先为 $\text{Find}(y)$）
+- $\text{Unite}(x,y)$ 又称 $\text{Unite}$，将 $x$ 和 $y$ 所在的集合合并（令 $\text{Find}(x)$ 的祖先为 $\text{Find}(y)$）
 
 ```cpp
 int Find(int x) {return x==f[x]?x:Find(f[x]);}
@@ -22,9 +26,9 @@ void Unite(int x,int y) {f[Find(x)]=Find(y);}
 
 ### 按秩合并
 
-按照 $size$ 或 $depth$ 进行启发式合并，将秩小的合并到秩大的上面。
+按照 `size` 或 `depth` 进行启发式合并，将秩小的合并到秩大的上面。
 
-一般 $size$ 结合路径压缩使用，$depth$ 单独使用。
+一般 `size` 结合路径压缩使用，`depth` 单独使用。
 
 一般用于不能路径压缩或压缩代价极大的题目。
 
@@ -33,7 +37,12 @@ void Unite(int x,int y) {f[Find(x)]=Find(y);}
 ```cpp
 int Find(int x) {return x==f[x]?x:f[x]=Find(f[x]);}
 ```
-$O(\alpha(n))$。几乎 $=O(1)$。
+
+如果同时使用两种优化，复杂度为 $O(\alpha(n))\approx O(1)$。
+
+## 分裂
+
+咕咕咕
 
 ## 带权并查集
 
@@ -55,7 +64,7 @@ $O(\alpha(n))$。几乎 $=O(1)$。
 
 显然只要求出 $f(\text{Find}(a),\text{Find}(b))$ 即可（对于 $a$ 所在的集合内的任意点 $x$，$f(x,\text{Find}(a))$ 和 $f(\text{Find}(a),\text{Find}(b))$ 已知）。
 
-因为 $f(a,\text{Find}(a)),f(a,b))$ 已知，所以可知 $f(b,\text{Find}(a))$，又已知 $f(b,\text{Find}(b))$ 所以可以求出。
+因为 $f(a,\text{Find}(a)),f(a,b)$ 已知，所以可知 $f(b,\text{Find}(a))$，又已知 $f(b,\text{Find}(b))$ 所以可以求出答案。
 
 至此：只剩下一个问题：更新 $a$ 所在的集合内点的权值。
 
@@ -76,9 +85,14 @@ $O(\alpha(n))$。几乎 $=O(1)$。
 > 给定 $m$ 组关系 $a_x-a_y=c$，判断是否造假（后面的关系和前面冲突）。
 
 将 $f(a,b)$ 替换为 $a-b$ 即可。
+
 $$
-f(b,a)=f(a,c)-f(a,b)\\
-f(b,a)=-f(a,b)\\
+f(b,a)=f(a,c)-f(a,b)
+$$
+$$
+f(b,a)=-f(a,b)
+$$
+$$
 f(a,a)=a-a=0
 $$
 
@@ -119,7 +133,9 @@ $a+b$ 不好直接维护。但是本题有一种有趣的性质： $a$ 和 $b$ �
 > - 告诉你 $X_p\oplus X_q=v$
 > - 给定 $k$ 个下标，求这些下标对应值的异或和
 
-同时维护一个 $val$。对于每次操作 1，令 $val(rt):=v\oplus dis(p)$。合并时两集合任意一边根有值则令新根有值。查询时先排掉有值的，剩下的两两配对即可（对于在同一集合的 $p,q$，$X_p\oplus X_q=dis(p)\oplus dis(q)$）。
+为了简化，令 $dis(x):=f(x,\text{Find}(x))$。
+
+维护一个 $val$。对于每次操作 1，令 $val(rt):=v\oplus dis(p)$。合并时两集合任意一边根有值则令新根有值。查询时先排掉有值的，剩下的两两配对即可（对于在同一集合的 $p,q$，$X_p\oplus X_q=dis(p)\oplus dis(q)$）。
 
 ```cpp
 #include <bits/stdc++.h>
@@ -203,15 +219,58 @@ int main()
 }
 ```
 
+带权并查集还可以处理一类扩展域的问题。这里给出[食物链](https://www.luogu.com.cn/problem/P2024)的代码。相比于扩展域版本的并查集，带权版本更加简单，更好推广。
+
+如果你不知道什么是扩展域，详见[这篇文章](https://www.luogu.com.cn/blog/maioxiaopi/qian-tan-bing-zha-ji)。
+
+
+```cpp
+// 此题的关系不满足交换律哦
+// f(a,b)=0 表示a和b是同类，1表示a吃b，2表示a被b吃
+#include <bits/stdc++.h>
+using namespace std;
+const int MAXN{50000},b6e0{3};
+int f[MAXN+5],dis[MAXN+5];
+int getf(int x)
+{
+    if (x==f[x]) return x;
+    getf(f[x]);
+    dis[x]=(dis[x]+dis[f[x]])%b6e0;
+    return f[x]=f[f[x]];
+}
+void merge(int x,int y,int z)
+{
+    dis[f[x]]=(z+dis[y]-dis[x]+b6e0)%b6e0;
+    f[f[x]]=f[y];
+}
+int main()
+{
+    int n,k;cin>>n>>k;
+    int ans{0};
+    for (int i{1};i<=n;++i) f[i]=i;
+    while (k--)
+    {
+        int op,x,y;scanf("%d %d %d",&op,&x,&y);--op;
+        if (x>n||y>n||x==y&&op!=0) {++ans;continue;}
+        if (x==y&&op==0) continue;
+        else if (getf(x)==getf(y)) ans+=((dis[x]-dis[y]+b6e0)%b6e0!=op);
+        else merge(x,y,op);
+    }
+    cout<<ans<<endl;
+}
+```
+
 ## 值域并查集
 
 在值域上开并查集，可以方便的处理一些值域问题。
 
-最初、第二分块有值域并查集的应用。
+最初、第二分块有值域并查集的应用，但讨论这些问题超过了笔者的能力范围。
 
 ## 代替链表
 
 如果只有删除没有插入，并查集可以代替链表。
+
+并查集的优点在于方便的删除区间。
 
 只要将 $x$ 的 father 改到 $x-1$ 即可。
 
