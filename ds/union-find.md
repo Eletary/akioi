@@ -1,7 +1,3 @@
-本文来自 <https://github.com/NFLSCode/akioi/blob/qwq/ds/union-find.md>
-
-（也是我写的qwq）
-
 # 并查集
 
 并查集是一种维护不相交集合的数据结构。
