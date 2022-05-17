@@ -28,6 +28,8 @@ void Unite(int x,int y) {f[Find(x)]=Find(y);}
 
 一般用于不能路径压缩或压缩代价极大的题目。
 
+（维护 `size` 更简单，但也可能被卡，又称作「启发式合并」）
+
 ### 路径压缩
 
 ```cpp
@@ -38,8 +40,40 @@ int Find(int x) {return x==f[x]?x:f[x]=Find(f[x]);}
 
 ## 分裂
 
-咕咕咕
+并查集如果不路径压缩，可以在合并点上分裂。
 
+一般应用于版本 DFS 树。下面给出可持久化并查集的核心代码：
+
+```cpp
+int Find(int x){return x==f[x]?x:Find(f[x]);}
+void Unite(int x,int y)
+{
+    sz[y]+=sz[x];
+    f[x]=y;
+}
+void Split(int x,int y)
+{
+    sz[y]-=sz[x];
+    f[x]=x;
+}
+void fz(int u)
+{
+    if (q[u].op==3)
+        q[u].ans=(Find(q[u].x)==Find(q[u].y));
+    int x,y;
+    if (q[u].op==1)
+    {
+        x=Find(q[u].x);y=Find(q[u].y);
+        if (sz[x]>sz[y]) swap(x,y);
+        if (x!=y)
+            Unite(x,y);
+    }
+    for (auto v:e[u])
+        fz(v);
+    if (q[u].op==1&&x!=y)
+        Split(x,y);
+}
+```
 ## 带权并查集
 
 ### 查询
