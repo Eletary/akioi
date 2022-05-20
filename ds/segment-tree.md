@@ -206,7 +206,7 @@ Int query(pnode p,int L,int R)
 
 摊还空间复杂度 $o(\lg V)$，单次最坏 $\Theta(\lg n)$。
 
-动态开点一般要求初值不特殊。
+动态开点一般要求初值不特殊。又因为动态开点线段树不完整，所以一般结点不维护区间 `[L,R)`，而是将信息放在递归中，方便建新结点。
 
 [普通平衡树](https://www.luogu.com.cn/problem/P3369)
 
@@ -262,3 +262,5 @@ int kth(pnode& p,int k,int L=-1e7,int R=1e7)
 }
 // 前后驱可由 kth+rank 简单实现
 ```
+
+动态开点的空间复杂度为 $O(\min(m\lg n,n))$，且一般低于这个上界。
