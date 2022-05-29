@@ -264,3 +264,72 @@ int kth(pnode& p,int k,int L=-1e7,int R=1e7)
 ```
 
 动态开点的空间复杂度为 $O(\min(m\lg n,n))$，且一般低于这个上界。
+
+## 线段树合并
+
+线段树合并是一种有趣的技巧，通常和动态开点同时使用。
+
+有两种合并方式：
+
+- 将 $b$ 合并到 $a$ 上（会破坏原先两颗树的结构）；
+- 合并到新树上（做法类似主席树的合并方式）。
+
+这里给出方式一的实现。
+
+> 给定一棵树，每个结点有一个能力值 $w_u$。
+> 求对于每个结点 $u$，其子树内满足 $w_v>w_u$ 的结点 $v$ 个数。
+
+对于每个结点，递归处理它所有儿子，然后合并所有儿子，再加上自己后查询即可。
+
+```cpp
+// 动态开点权值线段树
+struct tnode
+{
+    tnode *l,*r;
+    int cnt;
+};
+using pnode=tnode*;
+pnode nil{new tnode{nil,nil,0}};
+void check(pnode& p){if(p==nil)p=new tnode{nil,nil,0};}
+// 单点修改
+void modify(pnode& p,int k,int cnt)
+{
+    check(p);++p->cnt;
+    if (cnt==1) return;
+    int cq{cnt>>1};
+    if (k<=cq) modify(p->l,k,cq);
+    else modify(p->r,k-cq,cnt-cq);
+}
+void merge(pnode& p,pnode q)
+{
+    if (q==nil) return;
+    if (p==nil)
+    {
+        p=q;
+        return;
+    }
+    p->cnt+=q->cnt;
+    merge(p->l,q->l);merge(p->r,q->r);
+    delete q;
+}
+// 查询比某个点大的数个数
+int query(pnode p,int k,int L,int R)
+{
+    if (p==nil||L>k) return p->cnt;
+    int mid{L+R>>1};
+    if (k>=mid-1) return query(p->r,k,mid,R);
+    else return p->r->cnt+query(p->l,k,L,mid);
+}
+pnode fz(int u)
+{
+    pnode p{nil};
+    // e存储树，r存储答案
+    for (auto v:e[u])
+        merge(p,fz(v));
+    r[u]=query(p,v[u],1,1e9+1);
+    modify(p,v[u],1e9);
+    return p;
+}
+```
+
+一般线段树合并都是在类似如上的操作树中进行的。
