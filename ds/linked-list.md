@@ -4,7 +4,65 @@
 
 ## 简单应用
 
-咕咕咕
+给道链表模拟题：
+
+> 给定一个 $1$ 到 $n$ 的排列。四种操作：
+> - 将一个数移到另一个数的左边
+> - 将一个数移到另一个数的右边
+> - 交换两个数的位置
+> - 将整个序列翻转
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+const int N=1e5;
+list<int> a;
+list<int>::iterator pos[N],it;
+int read();
+int main()
+{
+    int n{read()},m{read()};
+    for (int i{1};i<=n;++i) a.push_back(i);
+    auto q=a.begin();
+    for (int i{1};i<=n;++i) pos[i]=q++;
+    bool rev{false};
+    while (m--)
+    {
+        int op{read()};
+        if (op==4)
+        {
+            rev^=1;
+            continue;
+        }
+        int x{read()},y{read()};
+        if (rev&&op<3) op=((op-1)^1)+1;
+        switch (op)
+        {
+        case 1:
+            a.erase(pos[x]);
+            pos[x]=a.insert(pos[y],x);
+            break;
+        case 2:
+            a.erase(pos[x]);
+            it=pos[y];++it;
+            pos[x]=a.insert(it,x);
+            break;
+        case 3:
+            swap(*pos[x],*pos[y]);
+            swap(pos[x],pos[y]);
+            break;
+        }
+    }
+    bool ood{n&1?1:rev^1};int ans{0};
+    for (auto x:a)
+    {
+        if (ood) ans+=x;
+        ood^=1;
+    }
+    cout<<ans<<endl;
+    return 0;
+}
+```
 
 ## 进阶玩法
 
