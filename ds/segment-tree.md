@@ -119,7 +119,7 @@ int main()
     pnode rt{new tnode};
     for (int i{1};i<=n;++i)
         scanf("%d",a+i),WS[i]=a[i];
-    sort(WS+1,WS+n+1);auto wend=unique(WS+1,WS+n+1); // 离散化，值域建树常用操作
+    sort(WS+1,WS+n+1);auto wend=unique(WS+1,WS+n+1); // 离散化，权值线段树常用操作，也可以动态开点
     build(rt,1,wend-WS);
     int ans{0};
     for (int i{1};i<=n;++i)
@@ -332,4 +332,79 @@ pnode fz(int u)
 }
 ```
 
-一般线段树合并都是在类似如上的操作树中进行的。
+一般线段树合并都是在类似如上的操作树中进行的，但也有某些不可逆的序列操作适用线段树合并，比如[这题](https://www.luogu.com.cn/problem/P3201)。
+
+维护答案，每次修改时合并线段树，并更新全局答案。
+
+这种将所有 $x$ 改成 $y$ 就属于不可逆的操作（可以去爬第二分块）。
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+struct tnode
+{
+    tnode *l,*r;
+    int cnt;
+    bool beg,end;
+    inline tnode();
+    void upd(){cnt=l->cnt+r->cnt-(l->end&&r->beg);beg=l->beg;end=r->end;}
+};
+using pnode=tnode*;
+pnode nil{new tnode};
+tnode::tnode():l{nil},r{nil},cnt{0},beg{false},end{false}{}
+inline void check(pnode& p){if(p==nil||p==nullptr)p=new tnode;}
+void modify(pnode& p,int k,int cnt)
+{
+    check(p);
+    if (cnt==1) {p->cnt=p->beg=p->end=1;return;}
+    int cp{cnt>>1};
+    if (k<=cp) modify(p->l,k,cp);
+    else modify(p->r,k-cp,cnt-cp);
+    p->upd();
+}
+void merge(pnode& p,pnode q,int cnt)
+{
+    if (q==nil) return;
+    if (p==nil) {p=q;return;}
+    if (cnt==1)
+        p->cnt=p->beg=p->end=(p->cnt||q->cnt);
+    else
+    {
+        merge(p->l,q->l,cnt>>1);merge(p->r,q->r,cnt-(cnt>>1));
+        p->upd();
+    }
+    delete q;
+}
+const int N(1e5),V(1e6);
+pnode seg[V+5];
+int main()
+{
+    int n,m;cin>>n>>m;
+    int ans{0};
+    for (int i{0};i<n;++i)
+    {
+        int color;scanf("%d",&color);
+        check(seg[color]);
+        ans-=seg[color]->cnt;
+        modify(seg[color],i+1,n);
+        ans+=seg[color]->cnt;
+    }
+    while (m--)
+    {
+        int op,x,y;scanf("%d",&op);
+        if (op==1)
+        {
+            scanf("%d %d",&x,&y);
+            if (x==y) continue;
+            check(seg[x]);check(seg[y]);
+            ans-=seg[x]->cnt+seg[y]->cnt;
+            merge(seg[y],seg[x],n);
+            ans+=seg[y]->cnt;
+            // 一定要注意清空被merge的线段树！
+            seg[x]=nil;
+        }
+        else printf("%d\n",ans);
+    }
+    return 0;
+}
+```
