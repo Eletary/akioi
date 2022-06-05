@@ -22,10 +22,10 @@ int main()
         int x;
         if (i==n+1) x=0x3f3f3f3f;
         else scanf("%d",&x);
-        while (qwq.size()&&qwq.top().second<=x)
+        while (qwq.size()&&qwq.top()<=x)
             qwq.pop();
         ans+=qwq.size();
-        qwq.emplace(i,x);
+        qwq.emplace(x);
     }
     cout<<ans<<endl;
 }

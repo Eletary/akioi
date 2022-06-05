@@ -18,7 +18,7 @@ struct tnode
     int cnt;
 };
 using pnode=tnode*;
-// 哨兵节点
+// 哨兵结点
 pnode nil{new tnode{nil,nil,0}};
 void check(pnode& p){if(p==nil)p=new tnode{nil,nil,0};}
 // insert操作。cnt为当前区间size，使用了类似第k大的写法

@@ -34,7 +34,7 @@ void insert(int x)
     ++sz[H];
     // 将前面的树 merge 到新插入的点
     if (lst[x]) dsu[F[H]][lst[x]-1].fa=lst[x];
-    // 插入新节点
+    // 插入新结点
     dsu[F[H]].emplace_back(lst[x],sz[H]);
 }
 ```
