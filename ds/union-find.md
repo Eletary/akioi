@@ -249,13 +249,11 @@ int main()
 }
 ```
 
-带权并查集还可以处理一类扩展域的问题。这里给出[食物链](https://www.luogu.com.cn/problem/P2024)的代码。相比于扩展域版本的并查集，带权版本更加简单，更好推广。
-
-如果你不知道什么是扩展域，详见[这篇文章](https://www.luogu.com.cn/blog/maioxiaopi/qian-tan-bing-zha-ji)。
+带权并查集还可以处理一类扩展域的问题。这里给出[食物链](https://www.luogu.com.cn/problem/P2024)的代码。
 
 
 ```cpp
-// 此题的关系不满足交换律哦
+// 此题的关系不满足交换律
 // f(a,b)=0 表示a和b是同类，1表示a吃b，2表示a被b吃
 #include <bits/stdc++.h>
 using namespace std;
@@ -294,7 +292,7 @@ int main()
 
 在值域上开并查集，可以方便的处理一些值域问题。
 
-最初、第二分块有值域并查集的应用，但讨论这些问题超过了笔者的能力范围。
+最初、第二分块有值域并查集的应用。
 
 ## 代替链表
 
