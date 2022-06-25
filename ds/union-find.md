@@ -310,3 +310,25 @@ int main()
 bool Remain(int l,int r){return Find(r)>=l;}
 void Remove(int l,int r){while (Find(r)>=l) f[f[r]]=f[r]-1;}
 ```
+
+> - 末尾加入一个点
+> - 查询某个后缀的最大值
+
+考虑用带权并查集维护区间。
+
+```cpp
+// 返回的不是祖先而是x这个点的后缀最大值（其实所有点的祖先都是最后插入的数）
+int Find(int x)
+{
+    if (f[x]==x) return dis[x];
+    dis[x]=max(dis[x],Find(f[x]));
+    f[x]=f[f[x]]
+    return dis[x];
+}
+void insert(int x)
+{
+    ++cnt;
+    f[cnt-1]=cnt;
+    dis[cnt]=x;
+}
+```
